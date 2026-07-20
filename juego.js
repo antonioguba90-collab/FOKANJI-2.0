@@ -132,12 +132,11 @@ function spawnEnemy() {
 let baseSpeed = 0;
 let speedAdaptada = 0;
 const factorDificultad = state.kills * 0.005; 
+const factorMobile = state.isMobile ? 0.7 : 1.0;
 
 if (state.gameStructure === "arcade") {
   // 🕹️ Configuración para el MODO ARCADE:
-  // Añadimos dificultad progresiva opcional basada en tus aciertos (state.kills)
-  const factorDificultad = state.kills * 0.005; 
-  
+  // Añadimos dificultad progresiva opcional basada en tus aciertos (state.kills)  
   // Modifica estos números para cambiar la velocidad del Arcade:
   baseSpeed = 0.30 + Math.random() * 0.25 + factorDificultad; // Más rápido de base
   speedAdaptada = Math.max(0.20* factorMobile, baseSpeed - (longLetras * 0.012)); 
