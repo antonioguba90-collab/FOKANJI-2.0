@@ -21,6 +21,9 @@ import { KANJI_SEMANA_5_RAW } from './modos/KANJI_SEMANA_5.js';
 import { KANJI_SEMANA_6_RAW } from './modos/KANJI_SEMANA_6.js';
 import { KANJI_SEMANA_7_RAW } from './modos/KANJI_SEMANA_7.js';
 
+const esMovil = window.innerWidth < 768; 
+const factorEscalaMovil = esMovil ? 0.7 : 1.0
+
 const MODES = { 
   hiragana: parsearLista(HIRAGANA_RAW), 
   katakana: parsearLista(KATAKANA_RAW), 
@@ -87,77 +90,75 @@ function init() {
 }
 
 function spawnEnemy() {
+  if (state.enemies.length >= state.MAX_ENEMIES || sistemaLector.bossMode || state.paused) return;
+
+  // 1. Obtener palabra UNA SOLA VEZ
+  const w = (state.gameStructure === "arcade") 
+    ? controladorModoArcade.obtenerPalabraParaSpawn() 
+    : controladorModoFases.obtenerPalabraParaSpawn();
+
+  if (!w) return; // Si no hay palabra, no hacemos nada
   
- if (state.enemies.length >= state.MAX_ENEMIES) return;
-
-  // Obtener la palabra según el modo de juego activo
-  let palabra = null;
-  if (state.gameStructure === "arcade") {
-    palabra = controladorModoArcade.obtenerPalabraParaSpawn();
-  } else {
-    palabra = controladorModoFases.obtenerPalabraParaSpawn();
-  }
-
-  // 🌟 CONTROL ESENCIAL: Si el selector devolvió null (esperando limpieza de iniciales), abortamos el spawn
-  if (!palabra) {
-    return; 
-  }
-  if (sistemaLector.bossMode || state.paused || state.enemies.length >= state.MAX_ENEMIES) return; 
-
-  // Solicitamos la palabra al controlador que corresponda
-  let w = null;
-  if (state.gameStructure === "arcade") {
-    w = controladorModoArcade.obtainPalabraParaSpawn ? controladorModoArcade.obtainPalabraParaSpawn() : controladorModoArcade.obtenerPalabraParaSpawn();
-  } else {
-    w = controladorModoFases.obtenerPalabraParaSpawn();
-  }
-
-  if (!w) return;
-  
+  // 2. Cálculo de posición y radio
   let x = 60 + Math.random() * (state.W - 120);
   const longLetras = w.romaji.length;
-  const multiplicadorTamano = 1 + (longLetras * 0.12); 
   const radius = (Math.min(state.W, state.H) * 0.024 + 20);
   
   for (let intento = 0; intento < 10; intento++) {
-    const solapa = state.enemies.some(e => {
-      if (e.y > state.H * 0.3) return false; 
-      return Math.abs(e.x - x) < (radius * 2.5); 
-    });
+    const solapa = state.enemies.some(e => e.y < state.H * 0.3 && Math.abs(e.x - x) < (radius * 2.5));
     if (!solapa) break;
     x = 60 + Math.random() * (state.W - 120);
   }
-// VELOCIDAD INDEPENDIENTE POR MODO DE JUEGO
-// ========================================================
+
+  // 3. VELOCIDAD INDEPENDIENTE POR MODO
 let baseSpeed = 0;
 let speedAdaptada = 0;
-  const factorMobile = state.isMobile ? 0.5 : 1.0;
-  if (state.gameStructure === "arcade") {
+
+if (state.gameStructure === "arcade") {
   // 🕹️ Configuración para el MODO ARCADE:
   // Añadimos dificultad progresiva opcional basada en tus aciertos (state.kills)
   const factorDificultad = state.kills * 0.005; 
-
-
+  
   // Modifica estos números para cambiar la velocidad del Arcade:
   baseSpeed = 0.30 + Math.random() * 0.25 + factorDificultad; // Más rápido de base
-  speedAdaptada = Math.max(0.20 * factorMobile, (baseSpeed - (longLetras * 0.012)) * factorMobile);
-  } else {
+  speedAdaptada = Math.max(0.20, baseSpeed - (longLetras * 0.012)); 
+
+} else {
   // 🎯 Configuración para el MODO FASES (Clásico):
   // Mantiene la velocidad original orientada al aprendizaje pausado
-  baseSpeed = 0.25 + Math.random() * (state.isMobile ? 0.15 : 0.25);
-  speedAdaptada = Math.max(0.12 * factorMobile, (baseSpeed - (longLetras * 0.015)) * factorMobile);
+  baseSpeed = 0.25 + Math.random() * 0.25;
+  speedAdaptada = Math.max(0.12, baseSpeed - (longLetras * 0.015));
+}
+  const finalSpeed = speedAdaptada * factorEscalaMovil;
+
+  // 4. Color y Creación (Común para ambos modos)
   const paleta = ["#ff5252", "#34ace0", "#33d9b2", "#ffb142", "#ff793f"]; 
   const coloresUsados = new Set(state.enemies.map(e => e.color));
   const colorLibre = paleta.find(c => !coloresUsados.has(c)) || "#ffffff";
 
   state.enemies.push({
-    id: state.nextId++, jp: w.jp, romaji: w.romaji, es: w.es, kana: w.kana || w.jp,
-    x: x, y: -30, speed: speedAdaptada, radius: radius, isBoss: false,
+    id: state.nextId++, 
+    wordId: w.id, // ID Único persistente para el sistema de fases
+    jp: w.jp, romaji: w.romaji, es: w.es, kana: w.kana || w.jp,
+    x: x, y: -30, speed: finalSpeed, speedAdaptada, radius: radius, isBoss: false,
     timerAyuda: 0, color: colorLibre,
     vecesAcertada: 0 
+  });
+}  
+
+function spawnExplosion(x, y, grande = false) {
+  const n = grande ? 80 : 30;
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const s = grande ? (2 + Math.random() * 8) : (1 + Math.random() * 5);
+    state.particles.push({
+      x: x, y: y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 1,
+      color: `hsl(${grande ? Math.random() * 360 : Math.random() * 40 + 10}, 100%, 60%)`,
+      size: grande ? (4 + Math.random() * 5) : (2 + Math.random() * 3),
     });
   }
 }
+
 function update() {
   if (state.gameOver || !state.started || state.paused) return;
   
