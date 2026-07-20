@@ -144,7 +144,7 @@ if (state.gameStructure === "arcade") {
 } else {
   // 🎯 Configuración para el MODO FASES (Clásico):
   // Mantiene la velocidad original orientada al aprendizaje pausado
-  baseSpeed = 0.25 + Math.random() * 0.25;
+  baseSpeed = 0.25 + Math.random() * (state.isMobile ? 0.15 : 0.25);
   speedAdaptada = Math.max(0.12* factorMobile, baseSpeed - (longLetras * 0.015));
 }
   const paleta = ["#ff5252", "#34ace0", "#33d9b2", "#ffb142", "#ff793f"]; 
