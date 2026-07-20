@@ -131,23 +131,21 @@ function spawnEnemy() {
 // ========================================================
 let baseSpeed = 0;
 let speedAdaptada = 0;
-const factorDificultad = state.kills * 0.005; 
-const factorMobile = state.isMobile ? 0.5 : 1.0;
-
-if (state.gameStructure === "arcade") {
+  const factorMobile = state.isMobile ? 0.5 : 1.0;
+  if (state.gameStructure === "arcade") {
   // 🕹️ Configuración para el MODO ARCADE:
-  // Añadimos dificultad progresiva opcional basada en tus aciertos (state.kills)  
+  // Añadimos dificultad progresiva opcional basada en tus aciertos (state.kills)
+  const factorDificultad = state.kills * 0.005; 
+
+
   // Modifica estos números para cambiar la velocidad del Arcade:
   baseSpeed = 0.30 + Math.random() * 0.25 + factorDificultad; // Más rápido de base
-  speedAdaptada = Math.max(0.20* factorMobile, baseSpeed - (longLetras * 0.012)); 
   speedAdaptada = Math.max(0.20 * factorMobile, (baseSpeed - (longLetras * 0.012)) * factorMobile);
-
-} else {
+  } else {
   // 🎯 Configuración para el MODO FASES (Clásico):
   // Mantiene la velocidad original orientada al aprendizaje pausado
   baseSpeed = 0.25 + Math.random() * (state.isMobile ? 0.15 : 0.25);
   speedAdaptada = Math.max(0.12 * factorMobile, (baseSpeed - (longLetras * 0.015)) * factorMobile);
-}
   const paleta = ["#ff5252", "#34ace0", "#33d9b2", "#ffb142", "#ff793f"]; 
   const coloresUsados = new Set(state.enemies.map(e => e.color));
   const colorLibre = paleta.find(c => !coloresUsados.has(c)) || "#ffffff";
@@ -157,22 +155,9 @@ if (state.gameStructure === "arcade") {
     x: x, y: -30, speed: speedAdaptada, radius: radius, isBoss: false,
     timerAyuda: 0, color: colorLibre,
     vecesAcertada: 0 
-  });}
-}
-
-function spawnExplosion(x, y, grande = false) {
-  const n = grande ? 80 : 30;
-  for (let i = 0; i < n; i++) {
-    const a = Math.random() * Math.PI * 2;
-    const s = grande ? (2 + Math.random() * 8) : (1 + Math.random() * 5);
-    state.particles.push({
-      x: x, y: y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 1,
-      color: `hsl(${grande ? Math.random() * 360 : Math.random() * 40 + 10}, 100%, 60%)`,
-      size: grande ? (4 + Math.random() * 5) : (2 + Math.random() * 3),
     });
   }
 }
-
 function update() {
   if (state.gameOver || !state.started || state.paused) return;
   
