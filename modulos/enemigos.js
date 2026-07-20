@@ -28,7 +28,7 @@ Object.keys(sprites).forEach(key => {
 });
 
 export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
- const factorMobile = state.isMobile ? 0.7 : 1.0;
+ const factorMobile = state.isMobile ? 0.6 : 1.0;
  // ---------------------------------------------------------------------------
   // ASIGNACIÓN ALEATORIA ÚNICA POR ENEMIGO (Soporta N cantidad de enemigos)
   // ---------------------------------------------------------------------------
