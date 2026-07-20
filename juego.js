@@ -131,6 +131,7 @@ function spawnEnemy() {
 // ========================================================
 let baseSpeed = 0;
 let speedAdaptada = 0;
+const factorDificultad = state.kills * 0.005; 
 
 if (state.gameStructure === "arcade") {
   // 🕹️ Configuración para el MODO ARCADE:
@@ -139,13 +140,13 @@ if (state.gameStructure === "arcade") {
   
   // Modifica estos números para cambiar la velocidad del Arcade:
   baseSpeed = 0.30 + Math.random() * 0.25 + factorDificultad; // Más rápido de base
-  speedAdaptada = Math.max(0.20, baseSpeed - (longLetras * 0.012)); 
+  speedAdaptada = Math.max(0.20* factorMobile, baseSpeed - (longLetras * 0.012)); 
 
 } else {
   // 🎯 Configuración para el MODO FASES (Clásico):
   // Mantiene la velocidad original orientada al aprendizaje pausado
   baseSpeed = 0.25 + Math.random() * 0.25;
-  speedAdaptada = Math.max(0.12, baseSpeed - (longLetras * 0.015));
+  speedAdaptada = Math.max(0.12* factorMobile, baseSpeed - (longLetras * 0.015));
 }
   const paleta = ["#ff5252", "#34ace0", "#33d9b2", "#ffb142", "#ff793f"]; 
   const coloresUsados = new Set(state.enemies.map(e => e.color));
