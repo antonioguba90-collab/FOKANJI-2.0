@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><link rel="icon" type="image/png" href="./favicon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+<title>FOKANJI</title>
+<style>
+  html, body {margin: 0; padding: 0;
+  /* Fondo aplicado al body */
+  background-image: url('./personajes/PORTADA.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #0c0c0c;
+  font-family: 'Courier New', monospace;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  font-weight: bold;
+}
+/* Capa oscura para que el texto de los menús siempre sea legible */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(8, 113, 246, 0.73); /* Oscurece la imagen un 70% */
+  z-index: -1; /* Detrás de todo el contenido */
+}
+  #game {
+  z-index: 10; /* Superior al fondo del body */
+  background: radial-gradient(ellipse at center, #0a0a25 0%, #02020a 100%); 
+}
+#hud {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    font-size: 18px; 
+    font-family: 'Arial Black', sans-serif; /* Fuente más gruesa para mayor legibilidad */
+    font-weight: 900;
+    color: #ffffff;
+    /* Sombras múltiples para crear un efecto de "bordes duros" */
+    text-shadow: 
+        2px 2px 0px #000, 
+        -1px -1px 0px #000, 
+        1px -1px 0px #000, 
+        -1px 1px 0px #000;
+    pointer-events: none;
+    padding: 12px 18px;
+}
+  #msg {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+    text-align: center; background: rgba(255, 255, 255, 0.85); padding: 24px 28px; border: 1px solid #444; border-radius: 12px; z-index: 25; max-width: 90%; box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  }
+  #msg small { display: block; font-size: 14px; color: #aaa; margin-top: 10px; }
+  #msg button {
+    margin-top: 14px; padding: 10px 20px; font-size: 16px; background: #009fff; color: #fff; border:1px solid #000000; border-radius: 6px; cursor: pointer;
+  }
+  #mobile-input {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; border: none; outline: none; font-size: 16px; background: transparent; color: transparent; caret-color: transparent; z-index: 5; -webkit-appearance: none; appearance: none;
+  }
+  #menu {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+    text-align: center; background: rgba(255, 255, 255, 0.85); padding: 24px 28px; border: 1px solid #444; border-radius: 12px; z-index: 25; max-width: 90%; box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  }
+  #menu h1 { font-size: 24px; margin: 0 0 6px; color: #bc13fe; text-shadow:0 0 10px #6cffeb; }
+  #menu p { 
+    font-size: 16px; 
+    font-weight: bold; 
+    color: #ffffff;             /* Texto blanco para máximo contraste */
+    font-family: 'Courier New', monospace; 
+    margin: 0 0 16px;
+    /* Fondo oscuro semitransparente para el texto */
+    background: rgba(0, 0, 0, 0.3); 
+    padding: 8px 12px;
+    border-radius: 6px;
+   } 
+  /* Contenedores de vistas para alternar pantallas de configuración */
+  .menu-view { display: flex; flex-direction: column; gap: 10px; min-width: 240px; }
+  .hidden { display: none !important; }
+
+  #menu button {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  padding: 12px 20px;
+  font-size: 16px;
+  background: #bc13fe; /* Violeta Vibrante */
+  color: #fff;
+  border: 2px solid #000000; /* <--- AQUÍ FALTABA "border:" */
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+  #menu button:active { transform: scale(0.98); }
+  
+  /* Estilos específicos de los botones de modos de juego */
+  #menu button.mode-classic { background: #009fff; border: 2px solid #000000; }
+  #menu button.mode-arcade { background: #4a148c; border: 2px solid #000000; }
+  
+  /* Estilos específicos del vocabulario */
+  #menu button.hiragana { 
+  background: #4A90E2; /* Azul cielo ártico */
+  border: 2px solid #000000; 
+}
+#menu button.katakana { 
+  background: #2C3E50; /* Azul noche profundo */
+  border: 2px solid #000000; 
+}
+#menu button.noken5 { 
+  background: #76D7EA; /* Azul hielo brillante */
+  border: 2px solid #000000; 
+}
+#menu button.noken2 { 
+  background: #A9C9D7; /* Gris azulado glacial */
+  border: 2px solid #000000; 
+}
+  #menu button.back { background: #f0040f; border: 2px solid #000000; font-size: 14px; padding: 8px 12px; margin-top: 6px; }
+  
+  #menu small { display: block; margin-top: 12px; font-size: 11px; color: #888; }
+.hidden {
+  display: none !important;
+}
+</style>
+</head>
+<body>
+  <div id="credits" class="ui-element" style="
+    position: fixed; 
+    bottom: 20px; 
+    left: 50%; 
+    transform: translateX(-50%);
+    color: #ffffff; 
+    font-size: 0.9rem; 
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.7); 
+    padding: 5px 15px;
+    border-radius: 5px;
+    z-index: 100;
+    pointer-events: none;
+    white-space: nowrap;">
+    Creado por NIHONGOCONTONIO 2026
+</div>
+</div>
+<div id="start-screen"
+style="
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    z-index: 1000; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    background-size: contain; 
+    background-position: center;
+    background-repeat: no-repeat;">
+
+    <div style="position:absolute; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:-1;"></div>
+    <button id="btn-start" style="padding: 15px 30px; font-size: 1.5rem; cursor:pointer; color: #ffffff; background:#009fff; border: 2px solid #000000; border-radius:10px; z-index: 1;">
+        Comenzar Juego
+    </button>
+    
+</div>
+<canvas id="game" class="hidden" ></canvas>
+<div id="hud" class="hidden">Puntos: 0 | Destruidos: 0</div><input id="mobile-input" type="text" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+
+<div id="menu"class="hidden">
+ <div id="view-translation" class="menu-view">
+  <p>¿QUIERES VER LA TRADUCCION EN ESPAÑOL DURANTE LA PARTIDA?</p>
+  <button class="mode-classic" id="btn-with-translation">Muestra el carácter y la traducción</button>
+  <button class="mode-arcade" id="id-no-translation">Modo Clásico (Sin traducción)</button>
+</div>
+<div id="view-structure" class="menu-view hidden">
+  <p>ELIGE ESTRUCTURA DE JUEGO</p>
+  <button class="mode-classic" data-structure="fases">🎯 Modo Fases (Clásico)</button>
+  <button class="mode-arcade" data-structure="arcade">🕹️ Modo Arcade (Aleatorio)</button>
+  <button id="btn-back-translation" style="background:#f0040f; margin-top:15px;">⬅️ Atrás</button>
+</div>
+
+  <!-- PANTALLA 2: ELEGIR QUÉ VOCABULARIO APRENDER (Oculta por defecto) -->
+  <div id="view-vocabulary" class="menu-view hidden">
+    <p>ELIGE EL VOCABULARIO DE LA PARTIDA</p>
+    <button class="hiragana" data-mode="hiragana">HIRAGANA</button>
+    <button class="katakana" data-mode="katakana">KATAKANA</button>
+    <button class="noken5" data-mode="KANJI_NOKEN_5">KANJI NOKEN 5</button>
+    <button class="noken2" data-mode="KANJI_SEMANA_2">NOKEN 2.1</button>
+    <button class="noken2" data-mode="KANJI_SEMANA_3">NOKEN 2.2</button>
+    <button class="noken2" data-mode="KANJI_SEMANA_4">NOKEN 2.3</button>
+    <button class="noken2" data-mode="KANJI_SEMANA_5">NOKEN 2.4</button>
+    <button class="noken2" data-mode="KANJI_SEMANA_6">NOKEN 2.5</button>
+    <button class="noken2" data-mode="KANJI_SEMANA_7">NOKEN 2.6</button>
+    <button class="back" id="btn-back-structure">⬅️ Cambiar Modo de Juego</button>
+  </div>
+</div>
+<div id="msg"></div>
+
+<script type="module" src="juego.js"></script>
+<script type="module" src="modulos/reproductor.js"></script>
+</body>
+</html>
