@@ -39,9 +39,9 @@ export let btnPausa = document.getElementById("btn-pausa") || (() => {
   const btn = document.createElement("button");
   btn.id = "btn-pausa";
   btn.innerHTML = "⏸️ Pausa";
-  btn.className = "control-btn"; // Usamos la clase CSS
+  btn.className = "control-btn2"; // Usamos la clase CSS
   btn.style.top = "15px";
-  btn.style.background = "rgb(34, 157, 170)";
+  btn.style.background = "rgba(34, 156, 170, 0.5)";
   btn.style.color = "#ffffff";
   document.body.appendChild(btn);
   return btn;
@@ -51,9 +51,9 @@ export let btnCheatBoss = document.getElementById("btn-cheat-boss") || (() => {
   const btn = document.createElement("button");
   btn.id = "btn-cheat-boss";
   btn.innerHTML = "⚡ Skip to Boss";
-  btn.className = "control-btn"; // Usamos la clase CSS
-  btn.style.top = "65px"; // Ajustado para que no se solape con el de Pausa
-  btn.style.background = "#4a148c";
+  btn.className = "control-btn1"; // Usamos la clase CSS
+  btn.style.top = "15px";
+  btn.style.background = "rgba(74, 20, 140, 0.5)";
   btn.style.color = "#ffffff";
   btn.style.display = "none";
   document.body.appendChild(btn);
