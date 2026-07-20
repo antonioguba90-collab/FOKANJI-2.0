@@ -131,6 +131,12 @@ const frameActual = Math.floor(Date.now() / e.velocidadAnimacion) % totalFrames;
     ctx.beginPath();
     ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
     ctx.fill();
+    const urlArchivo = e.src || e.url || "Propiedad de URL no encontrada en el objeto 'e'";
+
+console.warn(
+    `[Control Canvas] Dibujando fallback (círculo). La imagen aún no se ha cargado.\n` +
+    `📍 Coordenadas: X: ${e.x}, Y: ${e.y}\n` +
+    `🔗 URL del archivo: ${urlArchivo}`
   }
 
   // ==========================================
