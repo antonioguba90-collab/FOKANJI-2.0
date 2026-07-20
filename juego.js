@@ -132,7 +132,7 @@ function spawnEnemy() {
 let baseSpeed = 0;
 let speedAdaptada = 0;
 const factorDificultad = state.kills * 0.005; 
-const factorMobile = state.isMobile ? 0.1 : 1.0;
+const factorMobile = state.isMobile ? 0.05 : 1.0;
 
 if (state.gameStructure === "arcade") {
   // 🕹️ Configuración para el MODO ARCADE:
