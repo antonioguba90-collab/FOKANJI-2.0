@@ -31,7 +31,6 @@ export const state = {
   ALL_WORDS_POOL: [],
   BOSS_POOL: [],
   music:null,
-  isMobile: window.innerWidth < 768? 0.7 : 1.0,
 };
 
 // Inyección de botones del DOM
