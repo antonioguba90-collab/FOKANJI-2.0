@@ -157,7 +157,7 @@ if (state.gameStructure === "arcade") {
     x: x, y: -30, speed: speedAdaptada, radius: radius, isBoss: false,
     timerAyuda: 0, color: colorLibre,
     vecesAcertada: 0 
-  });
+  });}
 }
 
 function spawnExplosion(x, y, grande = false) {
