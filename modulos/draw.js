@@ -41,6 +41,12 @@ function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
 }
 
 export function ejecutarDrawLoop() {
+
+  const totalSet = sistemaLector.palabrasFaseActual.length > 0 
+  ? sistemaLector.palabrasFaseActual.length 
+  : (sistemaLector.CANTIDAD_NUEVAS + sistemaLector.CANTIDAD_REPASO);
+
+const completadas = sistemaLector.palabrasUnicasCompletadasSet.size;
   ctx.clearRect(0, 0, state.W, state.H);
   if (!state.started) {
     requestAnimationFrame(ejecutarDrawLoop);
@@ -284,8 +290,6 @@ ctx.textBaseline = "alphabetic";
 // 5. Actualización del HUD del Texto Superior
 const progresoFase = Math.max(0, sistemaLector.TOTAL_PALABRAS_FASE - sistemaLector.palabrasUnicasCompletadasSet.size);
   
-const totalSet = sistemaLector.CANTIDAD_NUEVAS + sistemaLector.CANTIDAD_REPASO;
-const completadas = sistemaLector.palabrasUnicasCompletadasSet.size;
 
 // Preparamos el nombre del modo para que sea legible (ej: KANJI_NOKEN_5 -> Kanji Noken 5)
 const nombresPersonalizados = {

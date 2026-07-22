@@ -21,11 +21,13 @@ export const controladorModoFases = {
   },
 
 // Lógica de actualización paso a paso en cada frame (dentro del update de juego.js)
-  update(spawnEnemyFn) {
-    const totalPalabrasSetActual = sistemaLector.CANTIDAD_NUEVAS + sistemaLector.CANTIDAD_REPASO;
-    
+update(spawnEnemyFn) {
+    const totalPalabrasSetActual = sistemaLector.palabrasFaseActual.length > 0 
+      ? sistemaLector.palabrasFaseActual.length 
+      : 0;    
+
     // Comprobar si el jugador ha completado todas las palabras del set actual
-    if (!sistemaLector.bossMode && sistemaLector.palabrasUnicasCompletadasSet.size >= totalPalabrasSetActual) {
+    if (!sistemaLector.bossMode && totalPalabrasSetActual > 0 && sistemaLector.palabrasUnicasCompletadasSet.size >= totalPalabrasSetActual) {
       state.enemies = []; // Limpiamos enemigos comunes flotantes
       
       // Guardamos las palabras superadas de este set para el examen del guardián
@@ -47,37 +49,37 @@ export const controladorModoFases = {
       if (sistemaLector.activeBoss) sistemaLector.bossTimerAyuda++;
     }
   },
-
-  obtenerPalabraParaSpawn() {
-    // 1. Recopilar iniciales de los enemigos que ya están flotando en la pantalla
+ obtenerPalabraParaSpawn() {
+    // 1. Recopilar iniciales y también los ROMAJIS exactos de los enemigos que ya están flotando en la pantalla
     const inicialesEnPantalla = new Set();
+    const romajisEnPantalla = new Set();
+    
     state.enemies.forEach(e => {
-      if (e.romaji && e.romaji.length > 0) {
-        inicialesEnPantalla.add(e.romaji[0]);
+      if (e.romaji) {
+        romajisEnPantalla.add(e.romaji);
+        if (e.romaji.length > 0) {
+          inicialesEnPantalla.add(e.romaji[0]);
+        }
       }
     });
 
     let w = null;
 
     // 2. --- FILTRADO ESTRICTO Y ABSOLUTO ---
-    // Solo permitimos palabras de la fase actual que:
-    // - NO hayan sido completadas ya (`palabrasUnicasCompletadasSet`).
-    // - Su letra inicial NO coincida con ninguna letra que ya esté flotando en pantalla.
-    const palabrasDisponiblesLimpias = sistemaLector.palabrasFaseActual.filter(word => 
-      !sistemaLector.palabrasUnicasCompletadasSet.has(word.romaji) && 
-      !inicialesEnPantalla.has(word.romaji[0])
-    );
+    const palabrasDisponiblesLimpias = sistemaLector.palabrasFaseActual.filter(word => {
+      const claveWord = `${word.romaji}_${word.jp}_${word.es}`;
+      
+      return !sistemaLector.palabrasUnicasCompletadasSet.has(claveWord) && 
+             !sistemaLector.palabrasUnicasCompletadasSet.has(word.romaji) &&
+             !romajisEnPantalla.has(word.romaji) && // 👈 EVITA QUE SALGA DOS VECES A LA VEZ EN PANTALLA
+             !inicialesEnPantalla.has(word.romaji[0]);
+    });
 
-    // 3. Si hay palabras que cumplen la regla de iniciales únicas, elegimos una al azar
+    // 3. Si hay palabras que cumplen la regla, elegimos una al azar
     if (palabrasDisponiblesLimpias.length > 0) {
       w = palabrasDisponiblesLimpias[Math.floor(Math.random() * palabrasDisponiblesLimpias.length)];
     }
 
-    // 4. --- RETENCION DE EMERGENCIA ---
-    // Si 'w' es null significa que todas las palabras que quedan por salir comparten inicial 
-    // con algún enemigo vivo en el mapa. 
-    // En lugar de forzar el spawn y duplicar letras, devolvemos `null`.
-    // Esto hará que el generador de `juego.js` no cree ningún enemigo en este ciclo 
-    // y espere pacientemente a que el jugador destruya el enemigo que causa el bloqueo.
     return w; 
-  }}
+  }
+  }
