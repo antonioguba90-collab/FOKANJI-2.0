@@ -47,10 +47,8 @@ export const MUSIC = {
   KANJI_SEMANA_7: "./audios/musica_semana7.mp3",
   Guardian: "./audios/musica_guardian.mp3",
   Jefefinal: "./audios/musica_JefeFinal.mp3",
-  
 };
-
-let mp3 = new ReproductorMP3();
+export let mp3 = new ReproductorMP3();
 let musicaGuardianSonando = false;
 
 // Instancia única para la música de fondo
@@ -161,23 +159,6 @@ function spawnExplosion(x, y, grande = false) {
 
 function update() {
   if (state.gameOver || !state.started || state.paused) return;
-  
-  if (sistemaLector.bossMode && !musicaGuardianSonando) {
-    musicaGuardianSonando = true;
-    mp3.pause();
-    
-    // Nueva lógica: Determinar qué música poner según el tipo de jefe
-    const esJefeFinal = sistemaLector.activeBoss && sistemaLector.activeBoss.id === 9999;
-    
-    if (esJefeFinal) {
-      mp3.cargar(MUSIC.Jefefinal); // Asegúrate de tener esta constante definida
-    } else {
-      mp3.cargar(MUSIC.Guardian);  // La música normal del Guardián
-    }
-    
-    mp3.setRepeat(true);
-    mp3.play();
-  }
   // Actualización delegada según el modo activo
   if (state.gameStructure === "arcade") {
     controladorModoArcade.update(spawnEnemy);
@@ -285,6 +266,9 @@ function destroyLocked() {
     return; 
   }
 
+  // Clave única basada en romaji, jp y es para evitar colisiones en homófonos
+  const claveUnica = `${target.romaji}_${target.jp}_${target.es}`;
+
   // 1. Sumamos el acierto
   target.vecesAcertada++;
 
@@ -316,12 +300,12 @@ function destroyLocked() {
 
   } else {
     // === SEGUNDO ACIERTO: Destrucción definitiva ===
-    if (!state.palabrasContadasGlobalSet.has(target.romaji)) {
-      state.palabrasContadasGlobalSet.add(target.romaji);
+    if (!state.palabrasContadasGlobalSet.has(claveUnica)) {
+      state.palabrasContadasGlobalSet.add(claveUnica);
       if (state.totalPalabrasNivel > 0) state.totalPalabrasNivel--;
     }
 
-    sistemaLector.palabrasUnicasCompletadasSet.add(target.romaji);
+    sistemaLector.palabrasUnicasCompletadasSet.add(claveUnica);
     state.enemies = state.enemies.filter(e => e.id !== target.id);
     
     state.score += target.romaji.length * 20;
@@ -330,18 +314,7 @@ function destroyLocked() {
     state.lockedId = null; 
     state.typedLen = 0;
 
-    // Control de flujo final (WinGame)
-    if (state.gameStructure === "fases") {
-      const palabrasRestantesEnPool = state.ALL_WORDS_POOL.filter(p => 
-        !sistemaLector.romajisUsadosGlobal.has(p.romaji) &&
-        !sistemaLector.palabrasFaseActual.some(f => f.romaji === p.romaji)
-      ).length;
 
-      const totalPalabrasSetActual = sistemaLector.CANTIDAD_NUEVAS + sistemaLector.CANTIDAD_REPASO;
-      if (sistemaLector.palabrasUnicasCompletadasSet.size >= totalPalabrasSetActual && palabrasRestantesEnPool === 0) {
-        winGame();
-      }
-    }
   }
 }
 
@@ -373,12 +346,11 @@ function avanzarFaseJefe(target) {
     target.jp = proxFrase.jp; target.romaji = proxFrase.romaji; target.es = proxFrase.es;
     sistemaLector.bossTimerAyuda = 0; state.typedLen = 0; 
   } else {
-    // === JEFE DERROTADO COMPLETAMENTE ===
+    // === JEFE / GUARDIÁN DERROTADO COMPLETAMENTE ===
     spawnExplosion(target.x, target.y, true); 
     state.enemies = state.enemies.filter(e => e.id !== target.id);
     state.score += 500; state.kills++;
     
-    // Guardamos la referencia de si era el jefe definitivo antes de limpiarlo
     const eraJefeFinal = target.id === 9999; 
 
     sistemaLector.bossMode = false; 
@@ -387,20 +359,20 @@ function avanzarFaseJefe(target) {
     state.typedLen = 0;
     
     if (state.gameStructure !== "arcade") {
-      // 1. Si acabamos de derrotar al Gran Jefe Supremo Final, llamamos al cartel de victoria
+      // 1. Si acabamos de derrotar al Jefe Final Supremo, fin del juego con victoria
       if (eraJefeFinal) {
         winGame();
         return;
       }
 
-      // 2. Si era un Guardián / Mini-Jefe normal de set:
+      // 2. Acabamos de derrotar al Guardián del primer set
       sistemaLector.miniJefesDerrotados++;
       
-      // Comprobamos si quedan más palabras sin usar en el pool general
+      // Verificamos si quedan palabras pendientes en el pool global
       const tieneMasPalabras = state.ALL_WORDS_POOL.some(p => !sistemaLector.romajisUsadosGlobal.has(p.romaji));
 
       if (tieneMasPalabras) {
-        // Quedan palabras: Volvemos a la música del nivel y cargamos el siguiente set limpio
+        // Si quedan palabras, cargamos siguiente fase normal
         musicaGuardianSonando = false; 
         mp3.pause();
         mp3.cargar(MUSIC[state.currentMode]);
@@ -408,12 +380,13 @@ function avanzarFaseJefe(target) {
         mp3.play();
 
         cargarNuevaFase();
-        // Reseteamos intervalos de aparición para el nuevo set
         state.spawnTimer = 0;
         state.spawnInterval = 180;
       } else {
-        // ¡NO QUEDAN MÁS PALABRAS! Invocamos inmediatamente al Gran Jefe Final
+        // 🛑 COMO YA NO QUEDAN MÁS PALABRAS, LLAMamos INMEDIATAMENTE AL JEFE FINAL
+        mp3.pause();
         triggerBossBattle(); 
+        
       }
     }
   }
