@@ -271,16 +271,16 @@ BOSS_FRAS|先週デパートに買い物に行きました。|SENSHUDEPATONIKAIM
 BOSS_FRAS|ご飯の後で散歩します。|GOHANNOATODESANPOSHIMASU|Daré un paseo después de comer.
 BOSS_FRAS|もう一度言ってください。|MOUICHIDOITTEKUDASAI|Por favor, dígalo una vez más.
 BOSS_FRAS|近くに山があります。|CHIKAKUNIYAMAGAARIMASU|Hay una montaña cerca.
-BOSS_FRAS|このホテルは部屋が多いです。|KONOHOTERUWAHEYAGAOOIDESU|Este hotel tiene muchas habitaciones.
+BOSS_FRAS|このホテルは部屋が多いです。|KONOHOTERUHAHEYAGAOOIDESU|Este hotel tiene muchas habitaciones.
 BOSS_FRAS|ともだちといっしょに学校に行きます。|TOMODACHITOISSHONIGAKKOONIIKIMASU|Voy a la escuela con un amigo.
 BOSS_FRAS|えんぴつが六本あります。|ENPITSUGAROPPONARIMASU|Hay seis lápices.
-BOSS_FRAS|この新聞はいくらですか。|KONOSHINBUNWAIKURADESUKA|¿Cuánto cuesta este periódico?
-BOSS_FRAS|このカメラは安いです。|KONOKAMERAWAYASUIDESU|Esta cámara es barata.
-BOSS_FRAS|かさは外にあります。|KASAWASOTONIARIMASU|El paraguas está afuera.
+BOSS_FRAS|この新聞はいくらですか。|KONOSHINBUNHAIKURADESUKA|¿Cuánto cuesta este periódico?
+BOSS_FRAS|このカメラは安いです。|KONOKAMERAHAYASUIDESU|Esta cámara es barata.
+BOSS_FRAS|かさは外にあります。|KASAHASOTONIARIMASU|El paraguas está afuera.
 BOSS_FRAS|けさシャワーを浴びました。|KESASHAWAAOABIMASHITA|Esta mañana me duché.
 BOSS_FRAS|コーヒーを飲みました。|KOOHIIONOMIMASHITA|Bebí café.
 BOSS_FRAS|あたらしい車をかいました。|ATARASHIIKURUMAOKAIMASHITA|Compré un coche nuevo.
-BOSS_FRAS|このぼうしは1000円です。|KONOBOUSHIWASENENDESU|Este sombrero cuesta 1000 yenes.
+BOSS_FRAS|このぼうしは1000円です。|KONOBOUSHIHASENENDESU|Este sombrero cuesta 1000 yenes.
 BOSS_FRAS|しゅくだいが半分おわりました。|SHUKUDAIGAHANBUNOWARIMASHITA|La tarea terminó a la mitad.
 BOSS_FRAS|わたしのうちにきませんか。|WATASHINOUCHINIKIMASENKA|¿No quieres venir a mi casa?
 BOSS_FRAS|きのうたなかさんとあいました。|KINOUTANAKASANTOAIMASHITA|Ayer me reuní con Tanaka-san.
@@ -288,16 +288,16 @@ BOSS_FRAS|いもうととおなじふくをかいました。|IMOOTOTOONAJIFUKUO
 BOSS_FRAS|わたしのへやはこのアパートの2かいです。|WATASHINOHEYAWAKONOAPAATONONIKAIDESU|Mi cuarto es el del segundo piso de este apartamento.
 BOSS_FRAS|さとうさんはギターをじょうずにひきます。|SATOOSANWAGITAAROJOZUNIHIKIMASU|Sato-san toca la guitarra muy bien.
 BOSS_FRAS|テーブルにおさらとはしをならべてください。|TEEBURUNIOSARATOHASHIONARABETEKUDASAI|Por favor, alinea los platos y palillos en la mesa.
-BOSS_FRAS|けさそうじをしたからへやはきれいです。|KESASOOJIOSHITAKARAHEYAWAKIREIDESU|Como limpié esta mañana, la habitación está limpia.
-BOSS_FRAS|きょうは500メートルおよぎました。|KYOOWA500MEETORUOYOGIMASHITA|Hoy nadé 500 metros.
+BOSS_FRAS|けさそうじをしたからへやはきれいです。|KESASOOJIOSHITAKARAHEYAHAKIREIDESU|Como limpié esta mañana, la habitación está limpia.
+BOSS_FRAS|きょうは500メートルおよぎました。|KYOOHA500MEETORUOYOGIMASHITA|Hoy nadé 500 metros.
 BOSS_FRAS|えきからたいしかんまでのちずをかいてください。|EKIKARATAISHIKANMADENOCHIZUOKAITEKUDASAI|Por favor, dibuja el mapa desde la estación hasta la embajada.
 BOSS_FRAS|うるさいからテレビをけしてください。|URUSAIKARATEREBIOKESHITEKUDASAI|Por favor apaga la televisión porque hace ruido.
-BOSS_FRAS|きょうはゆきがふっています。|KYOOWAYUKIGAFUTTEIMASU|Hoy está nevando.
+BOSS_FRAS|きょうはゆきがふっています。|KYOOHAYUKIGAFUTTEIMASU|Hoy está nevando.
 BOSS_FRAS|はこにりんごがいつつあります。|HAKONIRINGOGAIITSUTSUARIMASU|Hay cinco manzanas en la caja.
-BOSS_FRAS|めがねはつくえのうえにあります。|MEGANEWATSUKUENOUEINIARIMASU|Los anteojos están encima del escritorio.
+BOSS_FRAS|めがねはつくえのうえにあります。|MEGANEHATSUKUENOUEINIARIMASU|Los anteojos están encima del escritorio.
 BOSS_FRAS|まいばんくにのかぞくにでんわします。|MAIBANKUNINOKAZOKUNIDENWASHIMASU|Llamo a mi familia en mi país todas las noches.
-BOSS_FRAS|このまちにはゆうめいなビルがあります。|KONOMACHINIWAYUUMEINABIRUGAARIMASU|Hay un edificio famoso en esta ciudad.
-BOSS_FRAS|そのえいがはつまらなかったです。|SONOEEGAWATSUMARANAKATTADESU|Esa película fue aburrida.
+BOSS_FRAS|このまちにはゆうめいなビルがあります。|KONOMACHINIHAYUUMEINABIRUGAARIMASU|Hay un edificio famoso en esta ciudad.
+BOSS_FRAS|そのえいがはつまらなかったです。|SONOEEGAHATSUMARANAKATTADESU|Esa película fue aburrida.
 BOSS_FRAS|6がつ15にちにうまれました。|ROKUGATSU15NICHINIUMAREMASHITA|Nací el 15 de junio.
 BOSS_FRAS|おととしきょうとへいきました。|OTOTOSHIKYOOTOEIKIMASHITA|Fui a Kioto hace dos años.
 `.trim();
