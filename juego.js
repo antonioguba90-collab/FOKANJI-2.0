@@ -58,6 +58,26 @@ state.gameStructure = "fases";
 
 btnPausa.addEventListener("click", togglePause);
 btnCheatBoss.addEventListener("click", cheatSaltarAlJefe);
+function actualizarBotonesConConteo() {
+  // Buscamos todos los botones dentro de la vista de vocabulario que tengan el atributo data-mode
+  document.querySelectorAll("#view-vocabulary button[data-mode]").forEach(btn => {
+    const modo = btn.dataset.mode;
+    
+    // Verificamos que el modo exista en el objeto MODES y tenga un pool de normales
+    if (MODES[modo] && MODES[modo].normales) {
+      const cantidad = MODES[modo].normales.length;
+      
+      // Si el botón ya tiene un texto previo guardado, evitamos duplicar el número si se ejecuta varias veces.
+      // O podemos asignar el texto base limpio guardándolo en un atributo personalizado (ej: data-nombre-base).
+      if (!btn.dataset.nombreBase) {
+        btn.dataset.nombreBase = btn.textContent.trim();
+      }
+      
+      // Modificamos el texto del botón combinando el nombre original y el número de palabras
+btn.innerHTML = `${btn.dataset.nombreBase} <span style="color: #000000; font-size: 0.9em; font-weight: normal;">(${cantidad} palabras)</span>`;
+    }    }
+  );
+}
 
 function init() {
 
@@ -67,7 +87,9 @@ function init() {
   document.getElementById("view-translation").classList.remove("hidden");
   document.getElementById("view-structure").classList.add("hidden");
   document.getElementById("view-vocabulary").classList.add("hidden");
+  actualizarBotonesConConteo();
 });
+
   const alturaVisible = window.visualViewport ? window.visualViewport.height : state.H;
   state.player = { x: state.W / 2, y: alturaVisible - 80, size: Math.min(state.W, state.H) * 0.04 + 10 };
   state.enemies = []; state.bullets = []; state.particles = []; state.popups = [];
@@ -578,6 +600,7 @@ function showMenu() {
   mp3.cargar(MENU_THEME);
   mp3.setRepeat(true);
   mp3.play()
+  actualizarBotonesConConteo();
   document.getElementById("game").classList.add("hidden");
   document.getElementById("hud").classList.add("hidden");
   btnPausa.style.display = "none"; 
