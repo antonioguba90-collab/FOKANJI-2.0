@@ -312,7 +312,11 @@ function avanzarFaseJefe(target) {
     sistemaLector.activeBoss = null;
     state.lockedId = null; 
     state.typedLen = 0;
-    
+     musicaGuardianSonando = false; 
+        mp3.pause();
+        mp3.cargar(MUSIC[state.currentMode]);
+        mp3.setRepeat(true);
+        mp3.play();
     if (state.gameStructure !== "arcade") {
       if (eraJefeFinal) {
         winGame();
@@ -328,11 +332,6 @@ function avanzarFaseJefe(target) {
       });
 
       if (tieneMasPalabras) {
-        musicaGuardianSonando = false; 
-        mp3.pause();
-        mp3.cargar(MUSIC[state.currentMode]);
-        mp3.setRepeat(true);
-        mp3.play();
 
         cargarNuevaFase();
         state.spawnTimer = 0;
