@@ -2,7 +2,7 @@
 // MÓDULO: CONTROLADOR DE MODO DE JUEGO POR FASES (CLÁSICO)
 // ========================================================
 import { state } from './config.js';
-import { sistemaLector, cargarNuevaFase, triggerBossBattle } from './sistemaFases.js';
+import { sistemaLector, cargarNuevaFase, triggerGuardianBattle } from './sistemaFases.js';
 
 export const controladorModoFases = {
   // Inicialización específica del modo por fases
@@ -34,7 +34,7 @@ update(spawnEnemyFn) {
       sistemaLector.palabrasSuperadasFase = [...sistemaLector.palabrasFaseActual];
       
       // Activamos la batalla del jefe/guardián para este set terminado
-      triggerBossBattle();
+      triggerGuardianBattle();
     }
 
     // Control de la generación de enemigos normales si no estamos en modo jefe
