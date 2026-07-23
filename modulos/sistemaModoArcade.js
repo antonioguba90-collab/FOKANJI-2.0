@@ -3,6 +3,8 @@
 // ========================================================
 import { state } from './config.js';
 import { sistemaLector } from './sistemaFases.js';
+import{ ReproductorMP3 } from './reproductor.js';
+import { MUSIC, mp3 } from '../juego.js';
 
 export const controladorModoArcade = {
   jefeCadaKills: 40,
@@ -82,9 +84,12 @@ export const controladorModoArcade = {
       jp: poolExamen[0].jp, romaji: poolExamen[0].romaji, es: poolExamen[0].es,
       isBoss: true
     };
-
     state.enemies.push(sistemaLector.activeBoss);
     // Establecemos el próximo hito (ej: 80 kills) para cuando derrote a este jefe
     this.proximoHitoJefe += this.jefeCadaKills;
+      mp3.pause();
+      mp3.cargar(MUSIC.Guardian);
+      mp3.setRepeat(true);
+      mp3.play();
   }
 };
