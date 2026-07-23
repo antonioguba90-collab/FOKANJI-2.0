@@ -1,7 +1,7 @@
 import { state, canvas, ctx, hud, msg, mobileInput, menuEl, btnPausa, btnCheatBoss, resize } from './modulos/config.js';
 import { parsearLista } from './modulos/parser.js';
 import { getAudio, playShoot, playExplosion } from './modulos/audio.js';
-import { sistemaLector, cargarNuevaFase, triggerBossBattle } from './modulos/sistemaFases.js';import { ejecutarDrawLoop } from './modulos/draw.js';
+import { sistemaLector, cargarNuevaFase, triggerJefeFinalBattle } from './modulos/sistemaFases.js';import { ejecutarDrawLoop } from './modulos/draw.js';
 import { actualizarFisicasYColisiones } from './modulos/fisicas.js';
 
 // Importación de controladores estructurales
@@ -365,14 +365,13 @@ function avanzarFaseJefe(target) {
         return;
       }
 
-      // 2. Acabamos de derrotar al Guardián del primer set
+// 2. Acabamos de derrotar al Guardián del set
       sistemaLector.miniJefesDerrotados++;
       
-      // Verificamos si quedan palabras pendientes en el pool global
+      // 📏 Validación estricta global basada en el tamaño real del nivel
       const tieneMasPalabras = state.ALL_WORDS_POOL.some(p => !sistemaLector.romajisUsadosGlobal.has(p.romaji));
-
       if (tieneMasPalabras) {
-        // Si quedan palabras, cargamos siguiente fase normal
+        // Si aún faltan palabras en el nivel, cargamos la siguiente fase normal y su música
         musicaGuardianSonando = false; 
         mp3.pause();
         mp3.cargar(MUSIC[state.currentMode]);
@@ -383,10 +382,8 @@ function avanzarFaseJefe(target) {
         state.spawnTimer = 0;
         state.spawnInterval = 180;
       } else {
-        // 🛑 COMO YA NO QUEDAN MÁS PALABRAS, LLAMamos INMEDIATAMENTE AL JEFE FINAL
-        mp3.pause();
-        triggerBossBattle(); 
-        
+// 👑 SI NO QUEDAN PALABRAS: Sale el jefe final        mp3.pause();
+        triggerJefeFinalBattle(); 
       }
     }
   }
@@ -423,9 +420,6 @@ function cheatSaltarAlJefe() {
   state.enemies = []; 
   state.lockedId = null; 
   state.typedLen = 0;
-
-  // Forzar de forma directa el cambio a modo Jefe
-  //triggerBossBattle(); 
 
   // Ejecutamos el update para refrescar el ciclo de renderizado inmediatamente
   update();
