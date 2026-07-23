@@ -308,11 +308,26 @@ const modoFormateado = state.currentMode
   ? (nombresPersonalizados[state.currentMode] || state.currentMode.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()))
   : "Desconocido";
 
-let textoHud = `Modo: ${modoFormateado} | Puntos: ${state.score} | Fase: ${sistemaLector.miniJefesDerrotados + 1} | Progreso: ${sistemaLector.bossMode ? "¡JEFE!" : `${completadas}/${totalSet}`}`;
+let textoHud = "";
+
+// 🕹️ HUD EXCLUSIVO PARA MODO ARCADE (Incluye Puntos, Bajas y Guardianes Superados)
+if (state.gameStructure === "arcade") {
+  const guardianesDerrotadosArcade = Math.floor(state.kills / 40);
+  textoHud = `Modo: ${modoFormateado} (Arcade) | Puntos: ${state.score} | Enemigos Eliminados: ${state.kills} | Guardianes Superados: ${guardianesDerrotadosArcade}`;
+} 
+// 🗺️ HUD EXCLUSIVO PARA MODO FASES (Mantiene el anterior)
+else {
+  const totalSet = sistemaLector.palabrasFaseActual.length > 0 
+    ? sistemaLector.palabrasFaseActual.length 
+    : (sistemaLector.CANTIDAD_NUEVAS + sistemaLector.CANTIDAD_REPASO);
+
+  const completadas = sistemaLector.palabrasUnicasCompletadasSet.size;
+
+  textoHud = `Modo: ${modoFormateado} | Puntos: ${state.score} | Fase: ${sistemaLector.miniJefesDerrotados + 1} | Progreso: ${sistemaLector.bossMode ? "¡JEFE!" : `${completadas}/${totalSet}`}`;
   
-// Mantener tu lógica de progreso de nivel si aplica
-if (state.totalPalabrasNivel !== undefined && state.gameStructure !== "arcade") {
-  textoHud += `  (Restan del Nivel: ${state.totalPalabrasNivel})`;
+  if (state.totalPalabrasNivel !== undefined) {
+    textoHud += `  (Restan del Nivel: ${state.totalPalabrasNivel})`;
+  }
 }
 
 hud.textContent = textoHud;
