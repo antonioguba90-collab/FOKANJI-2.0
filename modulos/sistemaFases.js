@@ -3,8 +3,10 @@
 // ==========================================
 import { state } from './config.js';
 import { ReproductorMP3 }  from './reproductor.js';
-import { MUSIC,mp3 } from '../juego.js';
+import { MUSIC, mp3 } from '../juego.js';
+
 let musicaGuardianSonando = false;
+
 export const sistemaLector = {
   palabrasFaseActual: [],      
   palabrasFaseAnterior: [],    
@@ -17,7 +19,7 @@ export const sistemaLector = {
   CANTIDAD_ARCHIVADAS: 30,   
   
   poolRepasoAcumulado: [],   
-  romajisUsadosGlobal: new Set(), 
+  romajiUsadoGlobal: new Set(), 
 
   miniJefesDerrotados: 0, 
   bossMode: false,
@@ -25,28 +27,31 @@ export const sistemaLector = {
   bossTimerAyuda: 0
 };
 
+// Función auxiliar para generar la clave única de la palabra
+function obtenerClaveUnica(p) {
+  return `${p.romaji}_${p.jp}_${p.es}`;
+}
+
 export function cargarNuevaFase() {
-  if (!sistemaLector.romajisUsadosGlobal) {
-    sistemaLector.romajisUsadosGlobal = new Set();
+  if (!sistemaLector.romajiUsadoGlobal) {
+    sistemaLector.romajiUsadoGlobal = new Set();
   }
 
   sistemaLector.palabrasSuperadasFase = [];
   sistemaLector.palabrasUnicasCompletadasSet.clear(); 
 
-  // 1. Obtenemos estrictamente las palabras que NUNCA han entrado al romajisUsadosGlobal
-  let palabrasDisponiblesNuevas = state.ALL_WORDS_POOL.filter(p => 
-    !sistemaLector.romajisUsadosGlobal.has(p.romaji)
-  );
+  // 1. Obtenemos estrictamente las palabras que NO han sido usadas globalmente
+  let palabrasDisponiblesNuevas = state.ALL_WORDS_POOL.filter(p => {
+    const clave = obtenerClaveUnica(p);
+    return !sistemaLector.romajiUsadoGlobal.has(clave);
+  });
   
   // 🛡️ CORRECCIÓN DE SEGURIDAD PARA EL ÚLTIMO SET:
-  // Si por algún motivo matemático de filtrado anterior quedan palabras sueltas en el pool general 
-  // que el sistema consideraba usadas pero el nivel no ha terminado, 
-  // evitamos dejar un set vacío o de 2 palabras asegurando que coja un lote coherente o el resto absoluto.
-  if (palabrasDisponiblesNuevas.length === 0 && sistemaLector.romajisUsadosGlobal.size < state.ALL_WORDS_POOL.length) {
-    // Forzamos un re-escanéo de emergencia de las que realmente falten por ID/Romaji
-    palabrasDisponiblesNuevas = state.ALL_WORDS_POOL.filter(p => 
-      !sistemaLector.registroFasesPasadas.some(r => r.romaji === p.romaji)
-    );
+  if (palabrasDisponiblesNuevas.length === 0 && sistemaLector.romajiUsadoGlobal.size < state.ALL_WORDS_POOL.length) {
+    palabrasDisponiblesNuevas = state.ALL_WORDS_POOL.filter(p => {
+      const clave = obtenerClaveUnica(p);
+      return !sistemaLector.registroFasesPasadas.some(r => obtenerClaveUnica(r) === clave);
+    });
   }
 
   if (palabrasDisponiblesNuevas.length === 0) {
@@ -58,8 +63,6 @@ export function cargarNuevaFase() {
   let nuevoSet = [];
   
   // 2. ADAPTABILIDAD PARA EL ÚLTIMO SET:
-  // Si las palabras que quedan son menores a CANTIDAD_NUEVAS (por ejemplo, 15 o 5), 
-  // extraemos TODAS las que quedan en lugar de intentar buscar 30.
   const cantidadNuevasAExtraer = palabrasDisponiblesNuevas.length < sistemaLector.CANTIDAD_NUEVAS 
     ? palabrasDisponiblesNuevas.length 
     : Math.min(sistemaLector.CANTIDAD_NUEVAS, palabrasDisponiblesNuevas.length);
@@ -73,17 +76,20 @@ export function cargarNuevaFase() {
   sistemaLector.tamañoSetActual = sistemaLector.palabrasFaseActual.length;
   return true;
 }
-// 🛡️ 1. FUNCIÓN EXCLUSIVA DEL GUARDIÁN (Sale al terminar cada set)
+
+// 🛡️ 1. FUNCIÓN EXCLUSIVA DEL GUARDIÁN
 export function triggerGuardianBattle() {
   sistemaLector.bossMode = true;
   state.lockedId = null;
   state.typedLen = 0;
   sistemaLector.bossTimerAyuda = 0;
 
+  // Consolidamos y registramos las palabras de la fase actual en el pool global de usadas
   if (sistemaLector.palabrasFaseActual.length > 0) {
     sistemaLector.palabrasFaseActual.forEach(p => {
-      sistemaLector.romajisUsadosGlobal.add(p.romaji);
-      if (!sistemaLector.registroFasesPasadas.some(r => r.romaji === p.romaji)) {
+      const clave = obtenerClaveUnica(p);
+      sistemaLector.romajiUsadoGlobal.add(clave);
+      if (!sistemaLector.registroFasesPasadas.some(r => obtenerClaveUnica(r) === clave)) {
         sistemaLector.registroFasesPasadas.push(p);
       }
     });
@@ -92,7 +98,6 @@ export function triggerGuardianBattle() {
     }
   }
 
-  // Preparamos el examen con las palabras superadas del set actual
   let palabrasUnicasJefe = new Set();
   const copiaSuperadas = [...sistemaLector.palabrasSuperadasFase].sort(() => Math.random() - 0.5);
 
@@ -123,7 +128,7 @@ export function triggerGuardianBattle() {
   mp3.play();
 }
 
-// 👑 2. FUNCIÓN EXCLUSIVA DEL JEFE FINAL (Solo sale cuando ya no quedan palabras tras un guardián)
+// 👑 2. FUNCIÓN EXCLUSIVA DEL JEFE FINAL
 export function triggerJefeFinalBattle() {
   sistemaLector.bossMode = true;
   state.lockedId = null;

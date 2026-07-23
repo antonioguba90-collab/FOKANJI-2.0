@@ -7,7 +7,7 @@ import { sistemaLector, cargarNuevaFase, triggerGuardianBattle } from './sistema
 export const controladorModoFases = {
   // Inicialización específica del modo por fases
   init() {
-    sistemaLector.romajisUsadosGlobal = new Set();
+    sistemaLector.romajiUsadoGlobal = new Set(); // 👈 Actualizado a la nueva nomenclatura única
     sistemaLector.palabrasFaseActual = [];
     sistemaLector.palabrasFaseAnterior = [];
     sistemaLector.registroFasesPasadas = [];
@@ -20,8 +20,8 @@ export const controladorModoFases = {
     cargarNuevaFase();
   },
 
-// Lógica de actualización paso a paso en cada frame (dentro del update de juego.js)
-update(spawnEnemyFn) {
+  // Lógica de actualización paso a paso en cada frame (dentro del update de juego.js)
+  update(spawnEnemyFn) {
     const totalPalabrasSetActual = sistemaLector.palabrasFaseActual.length > 0 
       ? sistemaLector.palabrasFaseActual.length 
       : 0;    
@@ -49,14 +49,17 @@ update(spawnEnemyFn) {
       if (sistemaLector.activeBoss) sistemaLector.bossTimerAyuda++;
     }
   },
- obtenerPalabraParaSpawn() {
-    // 1. Recopilar iniciales y también los ROMAJIS exactos de los enemigos que ya están flotando en la pantalla
+
+  obtenerPalabraParaSpawn() {
+    // 1. Recopilar iniciales y también las CLAVES ÚNICAS / ROMAJIS exactos de los enemigos en pantalla
     const inicialesEnPantalla = new Set();
-    const romajisEnPantalla = new Set();
+    const clavesEnPantalla = new Set();
     
     state.enemies.forEach(e => {
       if (e.romaji) {
-        romajisEnPantalla.add(e.romaji);
+        const claveUnicaEnemigo = `${e.romaji}_${e.jp}_${e.es}`;
+        clavesEnPantalla.add(claveUnicaEnemigo);
+        clavesEnPantalla.add(e.romaji);
         if (e.romaji.length > 0) {
           inicialesEnPantalla.add(e.romaji[0]);
         }
@@ -65,13 +68,14 @@ update(spawnEnemyFn) {
 
     let w = null;
 
-    // 2. --- FILTRADO ESTRICTO Y ABSOLUTO ---
+    // 2. --- FILTRADO ESTRICTO Y ABSOLUTO CON CLAVE ÚNICA ---
     const palabrasDisponiblesLimpias = sistemaLector.palabrasFaseActual.filter(word => {
       const claveWord = `${word.romaji}_${word.jp}_${word.es}`;
       
       return !sistemaLector.palabrasUnicasCompletadasSet.has(claveWord) && 
              !sistemaLector.palabrasUnicasCompletadasSet.has(word.romaji) &&
-             !romajisEnPantalla.has(word.romaji) && // 👈 EVITA QUE SALGA DOS VECES A LA VEZ EN PANTALLA
+             !clavesEnPantalla.has(claveWord) && 
+             !clavesEnPantalla.has(word.romaji) && // 👈 Evita duplicados simultáneos en pantalla
              !inicialesEnPantalla.has(word.romaji[0]);
     });
 
@@ -82,4 +86,4 @@ update(spawnEnemyFn) {
 
     return w; 
   }
-  }
+};
